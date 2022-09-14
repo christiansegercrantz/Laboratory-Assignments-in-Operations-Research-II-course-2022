@@ -14,10 +14,12 @@ clear all, close all
 
 tspan = linspace(0,150,10000);
 
+stalling_speed = sqrt((g*2*m)/(C_l*S*rho))
+
 n0 = 4;
 x0 = linspace(0,0,n0);
 h0 = linspace(100,100,n0);
-v0 = linspace(10,30,n0);
+v0 = linspace(1,stalling_speed*2,n0);
 gamma0 = linspace(0,pi*3/8,n0);
 t = zeros(length(tspan),n0);
 y = zeros(length(tspan),n0,4);
@@ -63,8 +65,6 @@ plot(t,y(:,:,3).*cos(y(:,:,4)))
 xlabel('$t$', 'Interpreter','latex');
 ylabel('$\dot{x}$', 'Interpreter','latex');
 legend(lables,'Interpreter','latex')
-
-stalling_speed = sqrt((g*2*m)/(1.4*S*rho))
 
 %% ODE function
 function ret = odefcn(y, c)
