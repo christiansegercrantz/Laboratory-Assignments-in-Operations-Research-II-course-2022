@@ -18,9 +18,9 @@ v = X(3);       % velocity
 gamma = X(4);   % flight path angle
 
 % state equations
-xdot = ??
-hdot = ??
-vdot = ??
-gammadot = ??
+xdot = v*cos(gamma);
+hdot = v*sin(gamma);
+vdot = -s*rho/(2*m)*(cd0+k*cl^2)*v^2-g*sin(gamma);
+gammadot = 1/(2*m)*cl*rho*s*v-g/v*cos(gamma);
 
 Xdot = [xdot; hdot; vdot; gammadot];
