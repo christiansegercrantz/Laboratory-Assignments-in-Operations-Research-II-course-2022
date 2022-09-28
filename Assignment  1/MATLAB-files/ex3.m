@@ -7,7 +7,7 @@ clear all, close all
     K = 0.07;
     g = 9.81;
     rho = 1.13;
-    C_l = 1.4;
+    C_l = 0.696932;
     c = [m S C_d0 K g rho C_l];
 
 %% Initial values
@@ -18,7 +18,7 @@ stalling_speed = sqrt((g*2*m)/(C_l*S*rho))
 
 n0 = 4;
 x0 = linspace(0,0,n0);
-h0 = linspace(100,100,n0);
+h0 = linspace(10,10,n0);
 v0 = linspace(1,stalling_speed*2,n0);
 gamma0 = linspace(0,pi*3/8,n0);
 t = zeros(length(tspan),n0);
@@ -77,7 +77,7 @@ function ret = odefcn(y, c)
     C_l = c(7);
     x_dot = y(3)*cos(y(4));
     h_dot = y(3)*sin(y(4));
-    v_dot = -1/(2*m)*(C_d0 + K*C_l^2*S*rho*y(3)^2)-g*sin(y(4));
-    gamma_dot = 1/(2*m)*C_l*S*rho*y(3)*cos(y(4))-g/y(3)*cos(y(4));
+    v_dot = -(S*rho)/(2*m)*(C_d0 + K*C_l^2)*y(3)^2-g*sin(y(4));
+    gamma_dot = 1/(2*m)*C_l*S*rho*y(3)-g/y(3)*cos(y(4));
     ret = [x_dot; h_dot; v_dot; gamma_dot];
 end

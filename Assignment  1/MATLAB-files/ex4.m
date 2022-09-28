@@ -13,10 +13,12 @@ rho = 1.13;
 %% Values
 C_L = linspace(-1.4,1.4,100);
 C_D = C_D0 + K*C_L.^2;
-tangent = 2*K*C_L;
+tangent = 2*K*sqrt(C_D0/K)*C_L;
+x0 = sqrt(C_D0/K);
 
 plot(C_L,C_D)
 ylim([0,0.2])
 grid on
 hold on
 plot(C_L,tangent)
+scatter(x0, 2*K*sqrt(C_D0/K)*x0)
