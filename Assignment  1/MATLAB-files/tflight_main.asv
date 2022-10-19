@@ -11,7 +11,7 @@ close all
 
 dp = 5;     % number of discretization points at the start
 step = 3;   % increment of discretization points
-dpend = 50; % number of discretization points at the end
+dpend = 20; % number of discretization points at the end
 
 sc = [400 50 13 5 30];    % scaling (x, y, vx, vh, t)
 
@@ -155,7 +155,7 @@ for iter = dp:step:dpend
     fprintf('vx(tf) = %.2f m/s\n',a(3*iter)*sc(3));
     fprintf('Terminal time tf = %.2f s\n\n\n',a(end)*sc(5));
 end
-saveas(figure(1), "Plots\dynamic_h_termal.png")
-saveas(figure(2), "Plots\dynamic_v_termal.png")
-saveas(figure(3), "Plots\dynamic_control_termal.png")
-saveas(figure(4), "Plots\dynamic_gamma_termal.png")
+saveas(figure(1), "Plots\dynamic_h_te.png")
+saveas(figure(2), "Plots\dynamic_v.png")
+saveas(figure(3), "Plots\dynamic_control.png")
+saveas(figure(4), "Plots\dynamic_gamma.png")

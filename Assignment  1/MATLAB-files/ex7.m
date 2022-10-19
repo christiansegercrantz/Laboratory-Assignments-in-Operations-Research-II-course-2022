@@ -1,13 +1,16 @@
-
-% ==================================================
-% MS-E2133 System analysis laboratory II
-% Optimal flight with a glider
-% ==================================================
-
-% State variables are x, h, v and gamma
-
 clear
 close all
+
+A = dlmread('veratk_2.txt');
+t_compare = A(1,:);
+x_compare = A(2,:);
+h_compare = A(3,:);
+v_compare = A(4,:);
+gamma_compare = A(5,:);
+px_compare = A(6,:);
+ph_compare = A(7,:);
+pv_compare = A(8,:);
+pgamma_compare = A(9,:);
 
 dp = 5;     % number of discretization points at the start
 step = 3;   % increment of discretization points
@@ -168,8 +171,81 @@ fprintf('\n');
 fprintf('%.4f ',lg);
 fprintf('\n');
 
-saveas(figure(1), "Plots\dynamic_h.png")
-saveas(figure(2), "Plots\dynamic_v.png")
-saveas(figure(3), "Plots\dynamic_control.png")
-saveas(figure(4), "Plots\dynamic_gamma.png")
+t = linspace(0, a(end), iter-1)*sc(5);
+delta_t = (dpend-1)/(a(end)*sc(5));
+lables = ["Dynamically obtained result", "Results to compare to"];
+
+figure(1)
+hold on
+plot(x_compare, h_compare, "r--")
+hold off
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','southwest')
+saveas(figure(1), "Plots\dynamic_h_compare.png")
+
+figure(2)
+hold on
+plot(t_compare, v_compare, "r--")
+hold off
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','southwest')
+saveas(figure(2), "Plots\dynamic_v_compare.png")
+
+C_L_compare = pgamma_compare./(2*0.07*v_compare.*pv_compare);
+
+figure(3)%subplot(223)
+hold on
+plot(t_compare, C_L_compare, "r--")
+hold off
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','southwest')
+saveas(figure(3), "Plots\dynamic_control_compare.png")
+
+figure(4)
+hold on
+plot(t_compare, rad2deg(gamma_compare), "r--")
+hold off
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','southwest')
+saveas(figure(4), "Plots\dynamic_gamma_compare.png")
+
+figure;
+hold on
+grid on
+plot(t, 150*lx*3/2*delta_t, "-x")
+plot(t_compare, px_compare, "-o")
+ax = gca;
+ax.FontSize = 11;
+lables = ["$L_x$", "$p_x$"];
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','west')
+saveas(gcf, "Plots\costates_compare_px.png")
+
+figure;
+hold on
+grid on
+plot(t, 150*lh*3/2*delta_t, "-x")
+plot(t_compare,ph_compare, "-o")
+ax = gca;
+ax.FontSize = 11;
+lables = ["$L_h$", "$p_h$"];
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','west')
+saveas(gcf, "Plots\costates_compare_ph.png")
+
+figure;
+hold on
+grid on
+plot(t, 150*lv*3/2*delta_t, "-x")
+plot(t_compare, pv_compare, "-o")
+ax = gca;
+ax.FontSize = 11;
+lables = ["$L_v$", "$p_v$"];
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','northwest')
+saveas(gcf, "Plots\costates_compare_pv.png")
+
+figure;
+hold on
+grid on
+plot(t, 150*lg*3/2*delta_t, "-x")
+plot(t_compare, pgamma_compare, "-o")
+ax = gca;
+ax.FontSize = 11;
+lables = ["$L_g$", "$p_g$"];
+legend(lables,'Interpreter','latex','FontSize',13, 'Location','northwest')
+saveas(gcf, "Plots\costates_compare_pg.png")
 

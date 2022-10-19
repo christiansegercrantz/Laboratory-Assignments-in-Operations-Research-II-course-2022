@@ -17,7 +17,7 @@ c = [m S C_d0 K g rho C_l];
 
 tspan = linspace(0,1000,10000);
 
-stalling_speed = sqrt((g*2*m)/(C_l*S*rho))
+stalling_speed = sqrt((g*2*m)/(C_l*S*rho));
 
 
 x0 = linspace(0,0,n0);
@@ -38,7 +38,7 @@ for i = 1:n0
     t(length(t_temp):end,i) = t_temp(end);
     y(1:length(y_temp),i,:) = y_temp;
     y(length(y_temp):end,i,:) = repmat(y_temp(end,:),length(tspan)- length(y_temp)+1,1);
-    lables(i) = sprintf("$v_0 = %.1f m/s$", round(v0(i),1));%sprintf("$v_0 = %.1f m/s, \\gamma_0 = %.1f$", round(v0(i),1), round(rad2deg(gamma0(i)),1));
+    lables(i) = sprintf("$v_0 = %.1f m/s, \\gamma_0 = %.1f$", round(v0(i),1), round(rad2deg(gamma0(i)),1));
 end
 
 %% Plotting
@@ -50,9 +50,9 @@ ax = gca;
 ax.FontSize = 11;
 xlabel('$x$ [m]','Interpreter','latex','FontSize',13);
 ylabel('$h$ [m]','Interpreter','latex','FontSize',13);
-ylim([0, inf])
+ylim([39, inf])
 legend(lables,'Interpreter','latex','FontSize',13, 'Location','northeast')
-saveas(gcf, "Plots\stalling_speed_h.png")
+saveas(gcf, "Plots\varying_angle_h.png")
 
 figure;
 hold on
@@ -63,7 +63,7 @@ ax.FontSize = 11;
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$v$ [m/s]', 'Interpreter','latex','FontSize',13);
 legend(lables,'Interpreter','latex','FontSize',13, 'Location','southeast')
-saveas(gcf, "Plots\stalling_speed_v.png")
+saveas(gcf, "Plots\varying_angle_v.png")
 
 figure;
 hold on
@@ -74,7 +74,7 @@ ax.FontSize = 11;
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$\dot{h}$ [m/s]', 'Interpreter','latex','FontSize',13);
 legend(lables,'Interpreter','latex','FontSize',13)
-saveas(gcf, "Plots\stalling_speed_hdot.png")
+saveas(gcf, "Plots\varying_angle_hdot.png")
 
 figure;
 hold on
@@ -85,7 +85,7 @@ ax.FontSize = 11;
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$\dot{x}$ [m/s]', 'Interpreter','latex','FontSize',13);
 legend(lables,'Interpreter','latex','FontSize',13, 'Location','southeast')
-saveas(gcf, "Plots\stalling_speed_xdot.png")
+saveas(gcf, "Plots\varying_angle_xdot.png")
 
 figure;
 hold on
@@ -96,7 +96,7 @@ ax.FontSize = 11;
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$\gamma$ [deg]', 'Interpreter','latex','FontSize',13);
 legend(lables,'Interpreter','latex','FontSize',13)
-saveas(gcf, "Plots\stalling_speed_gamma.png")
+saveas(gcf, "Plots\varying_angle_gamma.png")
 
 figure;
 hold on
@@ -107,7 +107,7 @@ ax.FontSize = 11;
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$C_L$', 'Interpreter','latex','FontSize',13);
 legend(lables,'Interpreter','latex','FontSize',13)
-saveas(gcf, "Plots\stalling_speed_control.png")
+saveas(gcf, "Plots\varying_angle_control.png")
 
 %% ODE function
 function ret = odefcn(y, c)
@@ -126,7 +126,7 @@ function ret = odefcn(y, c)
 end
 %Stopping function
 function [position,isterminal,direction] = heightZeroEventsFcn(t,y)
-  position = y(2); % The value that we want to be zero
+  position = y(2)-40; % The value that we want to be zero
   isterminal = 1;  % Halt integration 
   direction = 0;   % The zero can be approached from either direction
 end
