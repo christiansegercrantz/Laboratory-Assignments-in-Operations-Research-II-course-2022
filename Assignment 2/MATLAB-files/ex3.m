@@ -2,12 +2,12 @@
 % MS-E2133 - Systems analysis laboratory II
 % Matlab-script: Simulation and control of a thermal power plant
 % ==================================================
-% 
+%
 % Run this script to initialize the values needed in model.mdl
-% 
+%
 % See example in lines 50-54 for running the model inside of Matlab
 %%
-close all  
+close all
 
 
 %% Parameters and initial values
@@ -33,8 +33,8 @@ k_out = 210.0;	% amplification of battery discharge control
 
 
 % Equilibrium values:
-% u_0 = 35.7; % fuel injection [kg / s] <= Value changed in step block 
-% z1_0 = 1.0; % setting of valve z1 <= Value changed in step block 
+u_0 = 35.7; % fuel injection [kg / s] <= Value changed in step block
+z1_0 = 1.0; % setting of valve z1 <= Value changed in step block
 fp_0   = 35.7;	% steam generation in the boiler [kg/s]
 pk_0   = 91.0;	% pressure of the boiler [bar]
 pkp_0  = 89.25;	% pressure of the high pressure stock [bar]
@@ -56,89 +56,95 @@ P = 3.6944;
 I = 0.0522;
 D = 150;
 PID= [0 P 0.9*P 1.2*P
-      0 0 I I*2/3
-      0 0 0 D];
+    0 0 I I*2/3
+    0 0 0 D];
 % PID = [0 1/a     0.9/a            1.2/a              %P
 %        0 0       (0.9/a)/(3*tau)    (1.2/a)/(2*tau)  %I
 %        0 0       0                1.2/a*0.5*tau];    %D
-fig_strings = ["SR" "P" "PI" "PID"];
-for i=1:4
-    PID(:,i)
-    P = PID(1,i);
-    I = PID(2,i);
-    D = PID(3,i);
-    fig_name = fig_strings(i);
-    %% Running the simulations inside of the Matlab-script
-    Simulation_Time = 1000;
-    SimOut = sim("voima_3.slx",Simulation_Time);
-    
-    %% figures;
-    % u fig
-    figure();
-    plot(SimOut.time, SimOut.u,"LineWidth",1.5)
-    ax = gca;
-    ax.FontSize = 11;
-    grid on
-    %ylim([35.175 37])
-    xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
-    ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
-    labels = ["$u$"];
-    legend(labels,"Interpreter","latex","FontSize",13)
-    saveas(gcf, sprintf("Plots\\u_tuning_%s.png", fig_name))
-    
-    % pkp fig
-    figure();
-    hold on
-    plot(SimOut.time, SimOut.pkp,"LineWidth",1.5)
-    yline([0.98*pkp_0 1.02*pkp_0], "--r", "LineWidth",1.5)
-    %
-    if(i==1)
-        dy=diff(SimOut.pkp)./diff(SimOut.time);
-        k=find(dy == max(dy));
-        tang=(SimOut.time-SimOut.time(k))*dy(k)+SimOut.pkp(k);
-        plot(SimOut.time,tang)
-        scatter(SimOut.time(k),SimOut.pkp(k))
+fig_strings = ["SR" "SR_P" "SR_PI" "SR_PID"
+               "Disturb" "Disturb_P" "Disturb_PI" "Disturb_PID"];
+for j=1:2
+    if j == 1
+        z1_new = z1_0;
+        u_new = u_0 +1;
+    else
+        z1_new = z1_0 + 084;
+        u_new = u_0; 
     end
-    hold off
-    ax = gca;
-    ax.FontSize = 11;
-    grid on
-    ylim([-inf, 93])
-    xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
-    ylabel("$p_{kp}$ [bar]", "Interpreter","latex","FontSize",13);
-    labels = ["$p_{kp}$" "$\pm2\%$"]; %Måste fixas så att båda linjerna är under samma 
-    if(i == 1)
-        labels = [labels "Tanget at steepst point" "Steepest point"];
-    end
-    legend(labels,"Interpreter","latex","FontSize",13)
-    saveas(gcf, sprintf("Plots\\pkp_tuning_%s.png", fig_name))
-    
-    % 
-    % % fp fig
-    % fig_fp= figure();
-    % plot(SimOut.time, SimOut.fp,"LineWidth",1.5)
-    % ax = gca;
-    % ax.FontSize = 11;
-    % grid on
-    % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
-    % ylabel("$f_{p}$ [kg/s]", "Interpreter","latex","FontSize",13);
-    % 
-    % % fg fig
-    % fig_fg = figure();
-    % plot(SimOut.time, SimOut.fg,"LineWidth",1.5)
-    % ax = gca;
-    % ax.FontSize = 11;
-    % grid on
-    % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
-    % ylabel("$f_{g}$ [kg/s]", "Interpreter","latex","FontSize",13);
-    % 
-    % % z1 fig
-    % fig_z1 = figure();
-    % plot(SimOut.time, SimOut.z1,"LineWidth",1.5)
-    % ax = gca;
-    % ax.FontSize = 11;
-    % grid on
-    % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
-    % ylabel("$z_{1}$", "Interpreter","latex","FontSize",13);
+    for i=1:4
+        PID(:,i)
+        P = PID(1,i);
+        I = PID(2,i);
+        D = PID(3,i);
+        fig_name = fig_strings(j,i);
+        %% Running the simulations inside of the Matlab-script
+        Simulation_Time = 1000;
+        SimOut = sim("voima_3.slx",Simulation_Time);
 
+        %% figures;
+        % u fig
+        figure();
+        plot(SimOut.time, SimOut.u,"LineWidth",1.5, "DisplayName","$u$")
+        ax = gca;
+        ax.FontSize = 11;
+        grid on
+        %ylim([35.175 37])
+        xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+        ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
+        legend("Interpreter","latex","FontSize",13)
+        %saveas(gcf, sprintf("Plots\\u_tuning_%s.png", fig_name))
+
+        % pkp fig
+        figure();
+        hold on
+        plot(SimOut.time, SimOut.pkp,"LineWidth",1.5, "DisplayName", "$p_{kp}$")
+        yline(0.98*pkp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
+        yline(1.02*pkp_0, "--r", "LineWidth",1.5, 'HandleVisibility','off')
+        %
+        if(j == 1 && i==1)
+            dy=diff(SimOut.pkp)./diff(SimOut.time);
+            k=find(dy == max(dy));
+            tang=(SimOut.time-SimOut.time(k))*dy(k)+SimOut.pkp(k);
+            plot(SimOut.time,tang, "DisplayName","Tangent at steepest point")
+            scatter(SimOut.time(k),SimOut.pkp(k), "DisplayName", "Steepest point")
+        end
+        hold off
+        ax = gca;
+        ax.FontSize = 11;
+        grid on
+        ylim([-inf, 93])
+        xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+        ylabel("$p_{kp}$ [bar]", "Interpreter","latex","FontSize",13);
+        legend("Interpreter","latex","FontSize",13)
+        %saveas(gcf, sprintf("Plots\\pkp_tuning_%s.png", fig_name))
+
+        %
+        % % fp fig
+        % fig_fp= figure();
+        % plot(SimOut.time, SimOut.fp,"LineWidth",1.5)
+        % ax = gca;
+        % ax.FontSize = 11;
+        % grid on
+        % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+        % ylabel("$f_{p}$ [kg/s]", "Interpreter","latex","FontSize",13);
+        %
+        % % fg fig
+        % fig_fg = figure();
+        % plot(SimOut.time, SimOut.fg,"LineWidth",1.5)
+        % ax = gca;
+        % ax.FontSize = 11;
+        % grid on
+        % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+        % ylabel("$f_{g}$ [kg/s]", "Interpreter","latex","FontSize",13);
+        %
+        % % z1 fig
+        % fig_z1 = figure();
+        % plot(SimOut.time, SimOut.z1,"LineWidth",1.5)
+        % ax = gca;
+        % ax.FontSize = 11;
+        % grid on
+        % xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+        % ylabel("$z_{1}$", "Interpreter","latex","FontSize",13);
+
+    end
 end
