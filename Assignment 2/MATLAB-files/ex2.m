@@ -48,55 +48,55 @@ pvp_0  = 3.0;	% pressure of the counter pressure stock [bar]
 
 %% Running the simulations inside of the Matlab-script
 Simulation_Time = 1000;
-SimOut = sim('voima',Simulation_Time);
+SimOut = sim('voima2',Simulation_Time);
 
 %% figures;
 % u fig
-figPkp = figure();
+figure();
 plot(SimOut.time, SimOut.u,'LineWidth',1.5)
 ax = gca;
 ax.FontSize = 11;
 grid on
 %title('control')
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$u$', 'Interpreter','latex','FontSize',13);
+ylabel('$u$ [kg/s]', 'Interpreter','latex','FontSize',13);
 
 % pkp fig
-figPkp = figure();
+figure();
 plot(SimOut.time, SimOut.pkp,'LineWidth',1.5)
 ax = gca;
 ax.FontSize = 11;
 grid on
-%title('control')
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$p_{kp}$', 'Interpreter','latex','FontSize',13);
+ylabel('$p_{kp} [bar]$', 'Interpreter','latex','FontSize',13);
+saveas(gcf, "Plots\\pkp_openvalve.png")
 
 % fp fig
-figPkp = figure();
+figure();
 plot(SimOut.time, SimOut.fp,'LineWidth',1.5)
 ax = gca;
 ax.FontSize = 11;
 grid on
-%title('control')
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$f_{p}$', 'Interpreter','latex','FontSize',13);
+ylabel('$f_{p} [kg/s]$', 'Interpreter','latex','FontSize',13);
+saveas(gcf, "Plots\\fp_openvalve.png")
 
 % fg fig
-figPkp = figure();
+figure();
 plot(SimOut.time, SimOut.fg,'LineWidth',1.5)
 ax = gca;
 ax.FontSize = 11;
 grid on
-%title('control')
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$f_{g}$', 'Interpreter','latex','FontSize',13);
+ylabel('$f_{g} [kg/s]$', 'Interpreter','latex','FontSize',13);
+saveas(gcf, "Plots\\fg_openvalve.png")
 
 % z1 fig
-figPkp = figure();
+figure();
 plot(SimOut.time, SimOut.z1,'LineWidth',1.5)
 ax = gca;
 ax.FontSize = 11;
 grid on
-%title('control')
 xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
 ylabel('$z_{1}$', 'Interpreter','latex','FontSize',13);
+saveas(gcf, "Plots\\z1_openvalve.png")

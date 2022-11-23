@@ -6,6 +6,9 @@
 % Run this script to initialize the values needed in model.mdl
 % 
 % See example in lines 50-54 for running the model inside of Matlab
+%%
+close all  
+
 
 %% Parameters and initial values
 
@@ -46,57 +49,57 @@ fkul_0 = 35.7; % flow to consumption [kg/s]
 pvp_0  = 3.0;	% pressure of the counter pressure stock [bar]
 
 
-%% Running the simulations inside of the Matlab-script
-Simulation_Time = 1000;
-SimOut = sim('voima',Simulation_Time);
+%% PID values
+a = pkp_0-88.9958;
+tau = 16;
+D =  1.2/a*0.5*tau;
+I = (1.2/a)/(2*tau);
+P = 1.2/a;
 
-%% figures;
-% u fig
-figPkp = figure();
-plot(SimOut.time, SimOut.u,'LineWidth',1.5)
-ax = gca;
-ax.FontSize = 11;
-grid on
-%title('control')
-xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$u$', 'Interpreter','latex','FontSize',13);
+%% PID2 values
+P_2 = 100;
+I_2 = 0.1; 
+D_2 = 0;
+fig_strings = ["P" "PI" "I" "ID"];
 
-% pkp fig
-figPkp = figure();
-plot(SimOut.time, SimOut.pkp,'LineWidth',1.5)
-ax = gca;
-ax.FontSize = 11;
-grid on
-%title('control')
-xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$p_{kp}$', 'Interpreter','latex','FontSize',13);
+k_in_arr = [k_in*0.1, k_in, k_in*2];	% amplification of battery charge control
+k_out_arr = [k_out*0.1, k_out, k_out*2];	% amplification of battery discharge control
 
-% fp fig
-figPkp = figure();
-plot(SimOut.time, SimOut.fp,'LineWidth',1.5)
-ax = gca;
-ax.FontSize = 11;
-grid on
-%title('control')
-xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$f_{p}$', 'Interpreter','latex','FontSize',13);
+for k_in= k_in_arr
+    for k_out = k_out_arr
+    %fig_name = fig_strings(i);
+    %% Running the simulations inside of the Matlab-script
+    Simulation_Time = 1000;
+    SimOut = sim("voima_9.slx",Simulation_Time);
+    
+    %% figures;
+    % u fig
+    figure('units','normalized','outerposition',[0 0 1 1]);
+    subplot(2,1,1)
+    hold on
+    plot(SimOut.time, SimOut.u,"LineWidth",1.5, "DisplayName", sprintf("$u, k_{in} = %g, k_{out} = %g$", k_in, k_out))
+    %hold off
+    ax = gca;
+    ax.FontSize = 11;
+    grid on
+    ylim([35.175 41])
+    xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+    ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
+    legend("Interpreter","latex","FontSize",13)
+    %saveas(gcf, sprintf("Plots\\u_counterpressure_tuning_%s.png", fig_name))
 
-% fg fig
-figPkp = figure();
-plot(SimOut.time, SimOut.fg,'LineWidth',1.5)
-ax = gca;
-ax.FontSize = 11;
-grid on
-%title('control')
-xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$f_{g}$', 'Interpreter','latex','FontSize',13);
-
-% z1 fig
-figPkp = figure();
-plot(SimOut.time, SimOut.z1,'LineWidth',1.5)
-ax = gca;
-ax.FontSize = 11;
-grid on
-%title('control')
-xlabel('$t$ [s]', 'Interpreter','latex','FontSize',13);
-ylabel('$z_{1}$', 'Interpreter','latex','FontSize',13);
+    % pvp fig  
+    %figure()
+    subplot(2,1,2)
+    hold on
+    plot(SimOut.time, SimOut.pa,"LineWidth",1.5, "DisplayName", sprintf("$p_{a}, k_{in} = %g, k_{out} = %g$", k_in, k_out))
+    ax = gca;
+    ax.FontSize = 11;
+    grid on
+    ylim([9.75 10.5])
+    xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+    ylabel("$p_a$ [bar]", "Interpreter","latex","FontSize",13);
+    legend("Interpreter","latex","FontSize",13)
+    %saveas(gcf, sprintf("Plots\\pvp_counterpressure_tuning_%s.png", fig_name))
+    end
+end
