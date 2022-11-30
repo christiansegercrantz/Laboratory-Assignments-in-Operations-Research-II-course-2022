@@ -1,1 +1,2 @@
 - Måst man skillt förklara i 3an vad som händer om de framgår ur step responsen? 
+- Det där pk och pkp är samam värde? Problem pga. delat på noll? 
