@@ -61,7 +61,7 @@ P_2_arr = [100 100 0 0];      %best 100
 I_2_arr = [0 0.1 0.1 0.1];    %best 0.1
 D_2_arr = [0 0 0 10];         %best 0
 fig_strings = ["P" "PI" "I" "ID"];
-for i= 1:4
+for i= 1:length(P_2_arr)
     fig_name = fig_strings(i);
     P_2 = P_2_arr(i);
     I_2 = I_2_arr(i);
@@ -72,7 +72,7 @@ for i= 1:4
     
     %% figures;
     % u fig
-    figure();
+    figure(1);
     hold on
     plot(SimOut.time, SimOut.u,"LineWidth",1.5, "DisplayName", "$u$")
     %hold off
@@ -83,10 +83,10 @@ for i= 1:4
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    saveas(gcf, sprintf("Plots\\u_counterpressure_tuning_%s.png", fig_name))
+    %saveas(gcf, sprintf("Plots\\u_counterpressure_tuning_%s.png", fig_name))
 
     % pvp fig  
-    figure()
+    figure(2)
     hold on
     plot(SimOut.time, SimOut.pvp,"LineWidth",1.5, "DisplayName", "$p_{vp}$")
     yline(1.1*pvp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
@@ -97,6 +97,19 @@ for i= 1:4
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$p$ [bar]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    saveas(gcf, sprintf("Plots\\pvp_counterpressure_tuning_%s.png", fig_name))
+    %saveas(gcf, sprintf("Plots\\pvp_counterpressure_tuning_%s.png", fig_name))
+
+%     % z_1 fig
+%     figure()
+%     hold on
+%     plot(SimOut.time, SimOut.z1,"LineWidth",1.5, "DisplayName", "$p_{vp}$")
+%     %yline(1.1*pvp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
+%     %yline(0.9*pvp_0, "--r", "LineWidth",1.5, 'HandleVisibility','off')
+%     ax = gca;
+%     ax.FontSize = 11;
+%     grid on
+%     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
+%     ylabel("$p$ [bar]", "Interpreter","latex","FontSize",13);
+%     legend("Interpreter","latex","FontSize",13)
 
 end
