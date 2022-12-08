@@ -60,22 +60,29 @@ P = 1.2/a;
 P_2 = 100;
 I_2 = 0.1; 
 D_2 = 0;
-fig_strings = ["P" "PI" "I" "ID"];
+fig_strings = ["equal" "k_in_small" "k_out_small" "k_in_large" "k_out_large" "k_out_huge"];
 
-k_in_arr = [k_in*0.1, k_in, k_in*2];	% amplification of battery charge control
-k_out_arr = [k_out*0.1, k_out, k_out*2];	% amplification of battery discharge control
+k_in_arr  =  k_in*[1 0.1 1   10 1 1  ];	% amplification of battery charge control
+k_out_arr = k_out*[1 1   0.1 1 10 250];	% amplification of battery discharge control
 
-for k_in= k_in_arr
-    for k_out = k_out_arr
-    %fig_name = fig_strings(i);
+for i = 1:length(k_in_arr)
+    k_in = k_in_arr(i)
+    k_out = k_out_arr(i)
+    fig_name = fig_strings(i);
     %% Running the simulations inside of the Matlab-script
-    Simulation_Time = 1000;
+    if i <= 5
+        Simulation_Time = 1000;
+    else
+        Simulation_Time = 35000;
+    end
+    
     SimOut = sim("voima_9.slx",Simulation_Time);
     
     %% figures;
     % u fig
-    figure('units','normalized','outerposition',[0 0 1 1]);
-    subplot(2,1,1)
+    figure()
+    %figure('units','normalized','outerposition',[0 0 1 1]);
+    %subplot(2,1,1)
     hold on
     plot(SimOut.time, SimOut.u,"LineWidth",1.5, "DisplayName", sprintf("$u, k_{in} = %g, k_{out} = %g$", k_in, k_out))
     %hold off
@@ -86,20 +93,21 @@ for k_in= k_in_arr
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    %saveas(gcf, sprintf("Plots\\u_counterpressure_tuning_%s.png", fig_name))
+    saveas(gcf, sprintf("Plots\\u_steam_battery_%s.png", fig_name))
 
-    % pvp fig  
-    %figure()
-    subplot(2,1,2)
+    % pa fig  
+    figure()
+    %subplot(2,1,2)
     hold on
     plot(SimOut.time, SimOut.pa,"LineWidth",1.5, "DisplayName", sprintf("$p_{a}, k_{in} = %g, k_{out} = %g$", k_in, k_out))
     ax = gca;
     ax.FontSize = 11;
     grid on
-    ylim([9.75 10.5])
+    if i <= 4
+        ylim([9.95 10.1]);
+    end
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$p_a$ [bar]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    %saveas(gcf, sprintf("Plots\\pvp_counterpressure_tuning_%s.png", fig_name))
-    end
+    saveas(gcf, sprintf("Plots\\pa_steam_battery_%s.png", fig_name))
 end

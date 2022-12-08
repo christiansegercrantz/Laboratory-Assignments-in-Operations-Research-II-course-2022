@@ -1,2 +1,3 @@
-- Måst man skillt förklara i 3an vad som händer om de framgår ur step responsen? 
-- Det där pk och pkp är samam värde? Problem pga. delat på noll? 
+- "How could one ensure that the battery is never emptied completely?" borde man komma fram till något förhållande som inte tömmer batteriet?
+- " It might be useful to also consider the frequency response of a PID-controller."
+- I-component in battery

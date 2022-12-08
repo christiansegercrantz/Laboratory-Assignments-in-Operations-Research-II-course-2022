@@ -60,11 +60,9 @@ P = 1.2/a;
 P_2 = 100;
 I_2 = 0.1; 
 D_2 = 0;
-fig_strings = ["P" "PI" "I" "ID"];
+fig_strings = ["step" "sin"] +"_extreme";
 
 %% Battery
-k_in = k_in*15;
-k_out = k_out*15;
 
 arr = [1 10 50 100 1000];
 P_arr = P*0.12;
@@ -73,60 +71,66 @@ D_arr = D *0.6;
 P_2_arr = P_2*0.1;%*0.5;%arr
 I_2_arr = I_2*0.3;%*arr
 D_2_arr = D_2;%*arr
-k_in_arr = k_in*1.3;%arr;	% amplification of battery charge control
-k_out_arr = k_out*1.3;%arr;	% amplification of battery discharge control
+k_in_arr = k_in*20;%arr;	% amplification of battery charge control
+k_out_arr = k_out*20;%arr;	% amplification of battery discharge control
 
+
+step_response = 12.5;
 
 sin_slow_f = 0.005;
-sin_slow_a = 0.1*fkul_0;
+sin_slow_a = 0.30*fkul_0;
 
 sin_fast_f = 0.1;
 sin_fast_a = sin_slow_a*(sin_slow_f/sin_fast_f);
 
-for P = P_arr
-    for I = I_arr
-        for D = D_arr
-            for P_2 = P_2_arr
-                for I_2 = I_2_arr
-                    for D_2 = D_2_arr
-                        for k_in = k_in_arr
-                            for k_out = k_out_arr
+use_step_arr = [1 0];
+
+for use_step = use_step_arr
+    for P = P_arr
+        for I = I_arr
+            for D = D_arr
+                for P_2 = P_2_arr
+                    for I_2 = I_2_arr
+                        for D_2 = D_2_arr
+                            for k_in = k_in_arr
+                                for k_out = k_out_arr
 
 %try
-    %fig_name = fig_strings(i);
+    fig_name = fig_strings(find(use_step == use_step_arr));
     %% Running the simulations inside of the Matlab-script
     Simulation_Time = 10000;
     SimOut = sim("voima_10.slx",Simulation_Time);
     
     %% figures;
     % u fig
-    figure('units','normalized','outerposition',[0 0 1 1]);
-    sgtitle(sprintf("$P = %g, I = %g, D = %g \nP_2 = %g, I_2 = %g, D_2 = %g \nk_{in} =%g, k_{out} = %g $", ...
-                    arr(P == P_arr), ...
-                    arr(I == I_arr), ...
-                    arr(D == D_arr), ...
-                    arr(P_2 == P_2_arr), ...
-                    arr(I_2 == I_2_arr), ...
-                    arr(D_2 == D_2_arr), ...
-                    arr(k_in == k_in_arr), ...
-                    arr(k_out == k_out_arr)), ...
-        "Interpreter","latex","FontSize",13)
-    subplot(2,2,1)
+    %figure('units','normalized','outerposition',[0 0 1 1]);
+    figure();
+%     sgtitle(sprintf("$P = %g, I = %g, D = %g \nP_2 = %g, I_2 = %g, D_2 = %g \nk_{in} =%g, k_{out} = %g $", ...
+%                     arr(P == P_arr), ...
+%                     arr(I == I_arr), ...
+%                     arr(D == D_arr), ...
+%                     arr(P_2 == P_2_arr), ...
+%                     arr(I_2 == I_2_arr), ...
+%                     arr(D_2 == D_2_arr), ...
+%                     arr(k_in == k_in_arr), ...
+%                     arr(k_out == k_out_arr)), ...
+%         "Interpreter","latex","FontSize",13)
+    %subplot(2,2,1)
     hold on
     plot(SimOut.time, SimOut.u,"LineWidth",1.5, "DisplayName", "$u$")
     ax = gca;
     ax.FontSize = 11;
     grid on
-    ylim([32 39])
+    %ylim([32 39])
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$u$ [kg/s]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    %saveas(gcf, sprintf("Plots\\u_counterpressure_tuning_%s.png", fig_name))
+    saveas(gcf, sprintf("Plots\\u_full_model_%s.png", fig_name))
     hold off
 
-    % pvp fig  
-    %figure()
-    subplot(2,2,2)
+    % pkp fig  
+    figure()
+    %subplot(2,2,2)
     hold on
     plot(SimOut.time, SimOut.pkp,"LineWidth",1.5, "DisplayName", "$p_{kp}$")
     yline(1.02*pkp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
@@ -139,16 +143,13 @@ for P = P_arr
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$p_{kp}$ [bar]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-    %saveas(gcf, sprintf("Plots\\pvp_counterpressure_tuning_%s.png", fig_name))
+    saveas(gcf, sprintf("Plots\\pkp_full_model_%s.png", fig_name))
 
     % pa fig  
-    %figure()
-    subplot(2,2,3)
+    figure()
+    %subplot(2,2,3)
     hold on
     plot(SimOut.time, SimOut.pa,"LineWidth",1.5, "DisplayName", "$p_{a}$")
-    %yline(1.02*pkp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
-    %yline(0.98*pkp_0, "--r", "LineWidth",1.5, 'HandleVisibility','off')
-    %yline(pkp_0, "--b", "LineWidth",1.5, "DisplayName","$p_{kp0}$")
     ax = gca;
     ax.FontSize = 11;
     grid on
@@ -156,15 +157,13 @@ for P = P_arr
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("$p_{a}$ [bar]", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
+    saveas(gcf, sprintf("Plots\\pa_full_model_%s.png", fig_name))
 
     % consumption fig  
-    %figure()
-    subplot(2,2,4)
+    figure()
+    %subplot(2,2,4)
     hold on
     plot(SimOut.time, SimOut.c,"LineWidth",1.5, "DisplayName", "consumption")
-    %yline(1.02*pkp_0, "--r", "LineWidth",1.5, "DisplayName","$\pm2\%$")
-    %yline(0.98*pkp_0, "--r", "LineWidth",1.5, 'HandleVisibility','off')
-    %yline(pkp_0, "--b", "LineWidth",1.5, "DisplayName","$p_{kp0}$")
     ax = gca;
     ax.FontSize = 11;
     grid on
@@ -172,10 +171,9 @@ for P = P_arr
     xlabel("$t$ [s]", "Interpreter","latex","FontSize",13);
     ylabel("consumption", "Interpreter","latex","FontSize",13);
     legend("Interpreter","latex","FontSize",13)
-%catch 
-%    disp("Failed")
-    %fprintf("Run:\n$P = %g, I = %g, D= %g \nP_2 = %g, I_2 = %g, D_2 = %g \nk_{in} =%g, k_{out} = %g $\n", P, I ,D, P_2, I_2, D_2, k_in, k_out)
-%end
+    saveas(gcf, sprintf("Plots\\consumption_full_model_%s.png", fig_name))
+
+                                end
                             end
                         end
                     end
